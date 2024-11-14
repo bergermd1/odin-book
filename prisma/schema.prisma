@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id                        Int           @id @default(autoincrement())
+  hash                      String
+  salt                      String
+  username                  String        @unique
+  email                     String        @unique
+  birthday                  DateTime      @default(now())
+  sex                       String
+  f_name                    String
+  l_name                    String
+  friendRequests            user[]        @relation("friendRequests")
+  friendRequestsRelation    user[]        @relation("friendRequests")
+  friends                   user[]        @relation("friends")
+  friendRelation            user[]        @relation("friends")
+  // friend        user        @relation("friends", fields: [id], references: [id])
+  // following     user[]      @relation("following")
+  // iFollow       user        @relation("following", fields: [iFollowId], references: [id])
+  // iFollowId     Int
+  // followers     user[]      @relation("followers")
+  // followingMe   user        @relation("followers", fields: [followingMeId], references: [id])
+  // followingMeId Int
+  posts             post[]      
+  images            image[]
+  comments          comment[]
+  commentLikes      commentLike[]
+  postLikes         postLike[]
+}
+
+model image {
+  id          Int         @id @default(autoincrement())
+  user        user        @relation(fields: [userId], references: [id])
+  userId      Int
+  url         String
+  caption     String?
+  createdAt   DateTime
+  isAvatar    Boolean
+}
+
+model post {
+  id          Int         @id @default(autoincrement())
+  user        user        @relation(fields: [userId], references: [id])
+  userId      Int
+  text        String
+  likes       postLike[]
+  createdAt   DateTime
+  comment     comment[]
+}
+
+model comment {
+  id          Int           @id @default(autoincrement())
+  post        post          @relation(fields: [postId], references: [id])
+  postId      Int
+  user        user          @relation(fields: [userId], references: [id])
+  userId      Int
+  text        String
+  likes       commentLike[]
+  createdAt   DateTime
+}
+
+model commentLike {
+  id          Int         @id @default(autoincrement())
+  user        user        @relation(fields: [userId], references: [id])        
+  userId      Int
+  comment     comment     @relation(fields: [commentId], references: [id])
+  commentId   Int          
+}
+
+model postLike {
+  id          Int         @id @default(autoincrement())
+  user        user        @relation(fields: [userId], references: [id])        
+  userId      Int
+  post        post        @relation(fields: [postId], references: [id])
+  postId      Int          
+}
+
+model Session {
+  id          String   @id
+  sid         String   @unique
+  data        String
+  expiresAt   DateTime
+}

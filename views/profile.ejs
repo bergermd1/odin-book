@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>profile</title>
+</head>
+<body>
+    <p>Logged in as: <%=user.username%></p>
+    <h1><%=profileUser.f_name%>'s Profile</h1>
+    <% if (profileUser.friends.filter(friend => friend.id === user.id).length === 0 && profileUser.id !== user.id && profileUser.friendRequests.filter(friend => friend.id === user.id).length === 0) { %>
+    <%      %>
+    <%      %>
+        <a href="/sendFriendRequest/<%=profileUser.id%>">Add friend</a>
+    <% } %>
+    <% if (profileUser.friendRequests.filter(friend => friend.id === user.id).length === 1) { %>
+           <p>Friend request sent...</p>
+    <% } %>
+    <h2>Bio</h2>
+    <ul>
+        <li>Name: <%=profileUser.f_name + ' ' + profileUser.l_name%></li>
+        <li>Birthday: <%=profileUser.birthday%></li>
+        <li>Sex: <%=profileUser.sex%></li>
+        <li>Email: <%=profileUser.email%></li>
+    </ul>
+    <h2>Friends</h2>
+    <p>Number of friends: <%=profileUser.friends.length%></p>
+    <% profileUser.friends.map(friend => { %>
+        <ul>
+            <li>
+                <a href="/profile/<%=friend.username%>"><%=friend.username%></a>
+            </li>
+        </ul>
+    <% }) %>
+    <br>
+    <a href="/logout">Logout</a>
+</body>
+</html>
