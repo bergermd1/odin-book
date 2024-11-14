@@ -39,6 +39,7 @@
     <% if (profileUser.id !== user.id 
           && profileUser.friends.find(friend => friend.id === user.id)) { %>
             <h3>Write on <%=profileUser.username%>'s wall!</h3>
+
             <form action="/writeOnWall" method="post">
                 <textarea name="text" id="text"></textarea>
                 <input type="text" name="userId" value="<%=user.id%>" hidden>
@@ -48,8 +49,32 @@
                 <button>Submit</button>
             </form>
     <% } %>
-    <% profileUser.postsReceived.map(post => { %> 
+    <% posts.map(post => { %> 
         <%=post.text%>
+        <br>
+        <i>Posted by: <%=post.username%> on <%=post.time.toString().slice(4, 21)%></i>
+        <br>
+        
+        This post has <%=post.likes.length%> like<% if (post.likes.length !== 1) { %>s<% } %>
+
+        <% const like = post.likes.find(like => like.userId === user.id) %>
+        <% if (like) { %>
+            <form action="/unlikePost" method="post">
+                <input type="text" name="likeId" value="<%=like.id%>" hidden>
+                <input type="text" name="profileUsername" value="<%=profileUser.username%>" hidden>
+                <button>Unlike</button>
+            </form>
+        <% } else { %>
+            <form action="/likePost" method="post">
+                <input type="text" name="postId" value="<%=post.postId%>" hidden>
+                <input type="text" name="userId" value="<%=user.id%>" hidden>
+                <input type="text" name="profileUsername" value="<%=profileUser.username%>" hidden>
+                <button>Like</button>
+            </form>
+        <% } %>
+        
+        <br>
+        <br>
         <br>
     <% })%>
     <br>

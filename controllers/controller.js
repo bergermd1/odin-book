@@ -70,11 +70,37 @@ exports.profileGet = async (req, res) => {
             postsReceived: {
                 orderBy: {
                     createdAt: 'desc',
+                },
+                include: {
+                    likes: true,
                 }
             }
         }
     })
-    res.render('profile', {user, profileUser});
+    const posts = await Promise.all(profileUser.postsReceived.map(async post => {
+        const usernameObject = await prisma.user.findUnique({
+            where: {
+                id: post.authorId,
+            },
+            select: {
+                username: true,
+            }
+        })
+        const username = usernameObject.username;
+        const text = post.text;
+        const time = post.createdAt;
+        const postId = post.id;
+        const userId = post.authorId;
+        const likes = post.likes;
+        // const numLikes = post.likes.length;
+        
+        return {username, text, time, postId, userId, likes}
+    }));
+
+    // console.log(posts);
+    
+    
+    res.render('profile', {user, profileUser, posts});
 }
 
 exports.userSearchGet = async (req, res) => {
@@ -109,31 +135,6 @@ exports.sendFriendRequestGet = async (req, res) => {
             }
         }
     })
-
-    // await prisma.user.update({
-    //     where: {
-    //         id: userId,
-    //     },
-    //     data: {
-    //         friends: {
-    //             connect: {
-    //                 id: friendUserId,
-    //             }
-    //         }
-    //     }
-    // })
-    // await prisma.user.update({
-    //     where: {
-    //         id: friendUserId,
-    //     },
-    //     data: {
-    //         friends: {
-    //             connect: {
-    //                 id: userId,
-    //             }
-    //         }
-    //     }
-    // })
 
     res.redirect('/')
 }
@@ -199,8 +200,6 @@ exports.rejectRequestGet = async (req, res) => {
 }
 
 exports.writeOnWallPost = async (req, res, next) => {
-    console.log(req.body);
-
     await prisma.post.create({
         data: {
             text: req.body.text,
@@ -209,16 +208,28 @@ exports.writeOnWallPost = async (req, res, next) => {
         }
     })
 
-    // await prisma.user.update({
-    //     where: {
-    //         id: req.body.userId,
-    //     },
-    // })
-
-    req.params = {username: 'a'};
+    // req.params = {username: 'a'};/////
     res.redirect(`/profile/${req.body.profileUsername}`)
-    // next();
-    
+}
+
+exports.likePostPost = async (req, res) => {
+    // console.log(req.body);
+    await prisma.postLike.create({
+        data: {
+            postId: parseInt(req.body.postId),
+            userId: parseInt(req.body.userId),
+        }
+    })
+    res.redirect(`/profile/${req.body.profileUsername}`)
+}
+
+exports.unlikePostPost = async (req, res) => {
+    await prisma.postLike.delete({
+        where: {
+            id: parseInt(req.body.likeId),
+        }
+    })
+    res.redirect(`/profile/${req.body.profileUsername}`)
 }
 
 /////only display 'send request' if it hasnt been sent already

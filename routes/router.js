@@ -15,6 +15,8 @@ router.get('/sendFriendRequest/:userId', controller.sendFriendRequestGet);
 router.get('/acceptRequest/:requestUserId', controller.acceptRequestGet);
 router.get('/rejectRequest/:requestUserId', controller.rejectRequestGet);
 router.post('/writeOnWall', controller.writeOnWallPost);
+router.post('/likePost', controller.likePostPost);
+router.post('/unlikePost', controller.unlikePostPost);
 // router.get('/userSearch?search=:search', controller.userSearchGet);
 
 // router.get('/allMessages', controller.allMessagesGet);
