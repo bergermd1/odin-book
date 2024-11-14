@@ -8,16 +8,14 @@
 <body>
     <p>Logged in as: <%=user.username%></p>
     <h1><%=profileUser.f_name%>'s Profile</h1>
-    <% if (profileUser.friends.filter(friend => friend.id === user.id).length === 0) { %>
-        <% if (profileUser.id !== user.id) { %>
-           <% if (profileUser.friendRequests.filter(friend => friend.id === user.id).length === 0) { %>
-              <% if(profileUser.friendRejections.filter(friend => friend.id === user.id).length === 0) { %>
+    <% if (!profileUser.friends.find(friend => friend.id === user.id)                 //not already friends with this user
+           && profileUser.id !== user.id                                              //this is not logged in user's profile
+           && !profileUser.friendRequests.find(friend => friend.id === user.id)       //has not already sent a friend request
+           && !profileUser.friendRejections.find(friend => friend.id === user.id))    /*has not already had friend request rejected*/ { %>
                 <a href="/sendFriendRequest/<%=profileUser.id%>">Send friend request</a>
-                <% } %>
-           <% } %>
-        <% } %>
     <% } %>
-    <% if (profileUser.friendRequests.filter(friend => friend.id === user.id).length === 1 || profileUser.friendRejections.filter(friend => friend.id === user.id).length === 1) { %>
+    <% if (profileUser.friendRequests.find(friend => friend.id === user.id)          //already sent a friend request
+          || profileUser.friendRejections.find(friend => friend.id === user.id))     /*has had friend request rejected*/  { %>
            <p>Friend request sent...</p>
     <% } %>
     <h2>Bio</h2>
@@ -36,6 +34,24 @@
             </li>
         </ul>
     <% }) %>
+    <br>
+    <h2>Wall</h2>
+    <% if (profileUser.id !== user.id 
+          && profileUser.friends.find(friend => friend.id === user.id)) { %>
+            <h3>Write on <%=profileUser.username%>'s wall!</h3>
+            <form action="/writeOnWall" method="post">
+                <textarea name="text" id="text"></textarea>
+                <input type="text" name="userId" value="<%=user.id%>" hidden>
+                <input type="text" name="profileUsername" value="<%=profileUser.username%>" hidden>
+                <input type="text" name="profileUserId" value="<%=profileUser.id%>" hidden>
+                <br>
+                <button>Submit</button>
+            </form>
+    <% } %>
+    <% profileUser.postsReceived.map(post => { %> 
+        <%=post.text%>
+        <br>
+    <% })%>
     <br>
     <a href="/logout">Logout</a>
 </body>

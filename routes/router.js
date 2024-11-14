@@ -12,8 +12,9 @@ router.get('/logout', controller.logoutGet);
 router.get('/profile/:username', controller.profileGet);
 router.get('/userSearch', controller.userSearchGet);
 router.get('/sendFriendRequest/:userId', controller.sendFriendRequestGet);
-router.get('/acceptRequest/:requestUserId', controller.acceptRequestGet)
-router.get('/rejectRequest/:requestUserId', controller.rejectRequestGet)
+router.get('/acceptRequest/:requestUserId', controller.acceptRequestGet);
+router.get('/rejectRequest/:requestUserId', controller.rejectRequestGet);
+router.post('/writeOnWall', controller.writeOnWallPost);
 // router.get('/userSearch?search=:search', controller.userSearchGet);
 
 // router.get('/allMessages', controller.allMessagesGet);

@@ -37,11 +37,12 @@ model user {
   // followers     user[]      @relation("followers")
   // followingMe   user        @relation("followers", fields: [followingMeId], references: [id])
   // followingMeId Int
-  posts             post[]      
-  images            image[]
-  comments          comment[]
-  commentLikes      commentLike[]
-  postLikes         postLike[]
+  postsMade                 post[]      @relation("author")
+  postsReceived             post[]      @relation("receiver")
+  images                    image[]
+  comments                  comment[]
+  commentLikes              commentLike[]
+  postLikes                 postLike[]
 }
 
 model image {
@@ -50,17 +51,19 @@ model image {
   userId      Int
   url         String
   caption     String?
-  createdAt   DateTime
+  createdAt   DateTime    @default(now())
   isAvatar    Boolean
 }
 
 model post {
   id          Int         @id @default(autoincrement())
-  user        user        @relation(fields: [userId], references: [id])
-  userId      Int
+  author      user        @relation("author", fields: [authorId], references: [id])
+  authorId    Int
+  receiver    user        @relation("receiver", fields: [receiverId], references: [id])
+  receiverId  Int
   text        String
   likes       postLike[]
-  createdAt   DateTime
+  createdAt   DateTime    @default(now())
   comment     comment[]
 }
 
@@ -72,7 +75,7 @@ model comment {
   userId      Int
   text        String
   likes       commentLike[]
-  createdAt   DateTime
+  createdAt   DateTime      @default(now())
 }
 
 model commentLike {

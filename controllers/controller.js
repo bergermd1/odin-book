@@ -67,6 +67,11 @@ exports.profileGet = async (req, res) => {
             friends: true,
             friendRequests: true,
             friendRejections: true,
+            postsReceived: {
+                orderBy: {
+                    createdAt: 'desc',
+                }
+            }
         }
     })
     res.render('profile', {user, profileUser});
@@ -193,9 +198,34 @@ exports.rejectRequestGet = async (req, res) => {
     res.redirect('/');
 }
 
+exports.writeOnWallPost = async (req, res, next) => {
+    console.log(req.body);
+
+    await prisma.post.create({
+        data: {
+            text: req.body.text,
+            authorId: parseInt(req.body.userId),
+            receiverId: parseInt(req.body.profileUserId),
+        }
+    })
+
+    // await prisma.user.update({
+    //     where: {
+    //         id: req.body.userId,
+    //     },
+    // })
+
+    req.params = {username: 'a'};
+    res.redirect(`/profile/${req.body.profileUsername}`)
+    // next();
+    
+}
+
 /////only display 'send request' if it hasnt been sent already
 /////remove 'send request' after friend request accepted
 /////and a "respond to friend request"
 
 /////if a requests b, b should not see a "add a" on a's profile, rather, respond to request
 ///// remove 'friend request sent' after it's accepted (but not if it's rejected)
+
+///// can a send b a friend request if a has already rejected one from b?
