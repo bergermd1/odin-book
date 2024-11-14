@@ -8,12 +8,16 @@
 <body>
     <p>Logged in as: <%=user.username%></p>
     <h1><%=profileUser.f_name%>'s Profile</h1>
-    <% if (profileUser.friends.filter(friend => friend.id === user.id).length === 0 && profileUser.id !== user.id && profileUser.friendRequests.filter(friend => friend.id === user.id).length === 0) { %>
-    <%      %>
-    <%      %>
-        <a href="/sendFriendRequest/<%=profileUser.id%>">Add friend</a>
+    <% if (profileUser.friends.filter(friend => friend.id === user.id).length === 0) { %>
+        <% if (profileUser.id !== user.id) { %>
+           <% if (profileUser.friendRequests.filter(friend => friend.id === user.id).length === 0) { %>
+              <% if(profileUser.friendRejections.filter(friend => friend.id === user.id).length === 0) { %>
+                <a href="/sendFriendRequest/<%=profileUser.id%>">Send friend request</a>
+                <% } %>
+           <% } %>
+        <% } %>
     <% } %>
-    <% if (profileUser.friendRequests.filter(friend => friend.id === user.id).length === 1) { %>
+    <% if (profileUser.friendRequests.filter(friend => friend.id === user.id).length === 1 || profileUser.friendRejections.filter(friend => friend.id === user.id).length === 1) { %>
            <p>Friend request sent...</p>
     <% } %>
     <h2>Bio</h2>

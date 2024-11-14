@@ -13,7 +13,9 @@
             <h2>Friend Requests:</h2>
             <ul>
                 <% user.friendRequests.map(requestUser => { %>
-                    <li><a href="/acceptRequest/<%=requestUser.id%>"><%=requestUser.username%></a></li>
+                    <li><%=requestUser.username%></li>
+                    <a href="/acceptRequest/<%=requestUser.id%>">Accept</a>
+                    <a href="/rejectRequest/<%=requestUser.id%>">Reject</a>
                 <% }) %>
             </ul>
         <% } %>

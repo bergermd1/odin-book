@@ -26,6 +26,8 @@ model user {
   l_name                    String
   friendRequests            user[]        @relation("friendRequests")
   friendRequestsRelation    user[]        @relation("friendRequests")
+  friendRejections          user[]        @relation("friendRejections")
+  friendRejectionsRelation  user[]        @relation("friendRejections")
   friends                   user[]        @relation("friends")
   friendRelation            user[]        @relation("friends")
   // friend        user        @relation("friends", fields: [id], references: [id])

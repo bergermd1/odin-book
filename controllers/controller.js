@@ -66,6 +66,7 @@ exports.profileGet = async (req, res) => {
         include: {
             friends: true,
             friendRequests: true,
+            friendRejections: true,
         }
     })
     res.render('profile', {user, profileUser});
@@ -136,13 +137,6 @@ exports.acceptRequestGet = async (req, res) => {
     const userId = req.user.id;
     const requestUserId = parseInt(req.params.requestUserId);
 
-    
-    // await prisma.user.update({
-    //     where: {
-    //         id
-    //     }
-    // })    
-
     await prisma.user.update({
         where: {
             id: userId,
@@ -175,9 +169,33 @@ exports.acceptRequestGet = async (req, res) => {
     res.redirect('/');
 }
 
+exports.rejectRequestGet = async (req, res) => {
+    const userId = req.user.id;
+    const requestUserId = parseInt(req.params.requestUserId);
+    
+    await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            friendRequests: {
+                disconnect: {
+                    id: requestUserId,
+                }
+            },
+            friendRejections: {
+                connect: {
+                    id: requestUserId,
+                }
+            }
+        }
+    })
+    res.redirect('/');
+}
+
 /////only display 'send request' if it hasnt been sent already
 /////remove 'send request' after friend request accepted
-
 /////and a "respond to friend request"
+
 /////if a requests b, b should not see a "add a" on a's profile, rather, respond to request
 ///// remove 'friend request sent' after it's accepted (but not if it's rejected)
