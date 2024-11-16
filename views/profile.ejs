@@ -80,13 +80,15 @@
                 <br>
                 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<i>Posted by: <%=comment.username%> on <%=comment.time.toString().slice(4, 21)%></i>
                 <br>
-                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspThis post has <%=comment.likes.length%> like<% if (comment.likes.length !== 1) { %>s<% } %>
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspThis comment has <%=comment.likedBy.length%> like<% if (comment.likedBy.length !== 1) { %>s<% } %>
                 <% if (profileUser.friends.find(friend => friend.id === user.id)
                       || profileUser.id === user.id) { %>
-                    <% const like = comment.likes.find(like => like.userId === user.id) %>
+                    <% const like = comment.likedBy.find(id => id === user.id) %>
                     <% if (like) { %>
                         <form action="/unlikeComment" method="post">
                             <input type="text" name="likeId" value="<%=like.id%>" hidden>
+                            <input type="text" name="commentId" value="<%=comment.id%>" hidden>
+                            <input type="text" name="userId" value="<%=user.id%>" hidden>
                             <input type="text" name="profileUsername" value="<%=profileUser.username%>" hidden>
                             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<button>Unlike</button>
                         </form>

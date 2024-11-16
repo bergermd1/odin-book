@@ -41,8 +41,8 @@ model user {
   postsReceived             post[]      @relation("postReceiver")
   images                    image[]
   comments                  comment[]
-  commentLikes              commentLike[]
-  postLikes                 postLike[]
+  // commentLikes              commentLike[]
+  // postLikes                 postLike[]
   // postLikesMade             post[]      @relation("postLikeAuthor")
   // postLikesReceived         post[]      @relation("postLiker")
 }
@@ -67,7 +67,7 @@ model post {
   likedBy     Int[]
   // likedBy     user[]      @relation("postLiker")
   // likedById   Int
-  likes       postLike[]
+  // likes       postLike[]
   createdAt   DateTime    @default(now())
   comment     comment[]
 }
@@ -80,25 +80,25 @@ model comment {
   userId      Int
   text        String
   likedBy     Int[]
-  likes       commentLike[]
+  // likes       commentLike[]
   createdAt   DateTime      @default(now())
 }
 
-model commentLike {
-  id          Int         @id @default(autoincrement())
-  user        user        @relation(fields: [userId], references: [id])        
-  userId      Int
-  comment     comment     @relation(fields: [commentId], references: [id])
-  commentId   Int          
-}
+// model commentLike {
+//   id          Int         @id @default(autoincrement())
+//   user        user        @relation(fields: [userId], references: [id])        
+//   userId      Int
+//   comment     comment     @relation(fields: [commentId], references: [id])
+//   commentId   Int          
+// }
 
-model postLike {
-  id          Int         @id @default(autoincrement())
-  user        user        @relation(fields: [userId], references: [id])        
-  userId      Int
-  post        post        @relation(fields: [postId], references: [id])
-  postId      Int          
-}
+// model postLike {
+//   id          Int         @id @default(autoincrement())
+//   user        user        @relation(fields: [userId], references: [id])        
+//   userId      Int
+//   post        post        @relation(fields: [postId], references: [id])
+//   postId      Int          
+// }
 
 model Session {
   id          String   @id
