@@ -76,6 +76,9 @@ exports.profileGet = async (req, res) => {
                     comment: {
                         orderBy: {
                             createdAt: 'desc',
+                        },
+                        include: {
+                            likes: true,
                         }
                     }
                 }
@@ -115,13 +118,18 @@ exports.profileGet = async (req, res) => {
             const username = usernameObject.username;
             const text = comment.text;
             const time = comment.createdAt;
-            return {username, text, time}
+            const likes = comment.likes;
+            const id = comment.id;
+            const userId = comment.userId
+            return {username, text, time, likes, id, userId}
         }))
+
+        console.log(comments);
         
         return {username, text, time, postId, userId, likes, comments}
     }));
 
-    console.log(posts[0]);
+    // console.log(posts[0]);
     
 
     res.render('profile', {user, profileUser, posts});
@@ -262,6 +270,27 @@ exports.commentPost = async (req, res) => {
             postId: parseInt(req.body.postId),
             userId: parseInt(req.body.userId),
             text: req.body.text,
+        }
+    })
+    res.redirect(`/profile/${req.body.profileUsername}`)
+}
+
+exports.likeCommentPost = async (req, res) => {
+    console.log(req.body);
+    
+    await prisma.commentLike.create({
+        data: {
+            commentId: parseInt(req.body.commentId),
+            userId: parseInt(req.body.userId),
+        }
+    })
+    res.redirect(`/profile/${req.body.profileUsername}`)
+}
+
+exports.unlikeCommentPost = async (req, res) => {
+    await prisma.commentLike.delete({
+        where: {
+            id: parseInt(req.body.likeId),
         }
     })
     res.redirect(`/profile/${req.body.profileUsername}`)
