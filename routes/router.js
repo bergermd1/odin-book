@@ -17,6 +17,7 @@ router.get('/rejectRequest/:requestUserId', controller.rejectRequestGet);
 router.post('/writeOnWall', controller.writeOnWallPost);
 router.post('/likePost', controller.likePostPost);
 router.post('/unlikePost', controller.unlikePostPost);
+router.post('/comment', controller.commentPost);
 // router.get('/userSearch?search=:search', controller.userSearchGet);
 
 // router.get('/allMessages', controller.allMessagesGet);

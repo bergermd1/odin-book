@@ -73,6 +73,11 @@ exports.profileGet = async (req, res) => {
                 },
                 include: {
                     likes: true,
+                    comment: {
+                        orderBy: {
+                            createdAt: 'desc',
+                        }
+                    }
                 }
             }
         }
@@ -92,14 +97,33 @@ exports.profileGet = async (req, res) => {
         const postId = post.id;
         const userId = post.authorId;
         const likes = post.likes;
-        // const numLikes = post.likes.length;
+        // const comments = post.comment;
+
+        const comments = await Promise.all(post.comment.map(async comment => {
+            // console.log(comment);
+            
+            const usernameObject = await prisma.user.findUnique({
+                where: {
+                    id: comment.userId,
+                },
+                select: {
+                    username: true,
+                }
+            })
+            console.log(usernameObject);
+            
+            const username = usernameObject.username;
+            const text = comment.text;
+            const time = comment.createdAt;
+            return {username, text, time}
+        }))
         
-        return {username, text, time, postId, userId, likes}
+        return {username, text, time, postId, userId, likes, comments}
     }));
 
-    // console.log(posts);
+    console.log(posts[0]);
     
-    
+
     res.render('profile', {user, profileUser, posts});
 }
 
@@ -213,7 +237,6 @@ exports.writeOnWallPost = async (req, res, next) => {
 }
 
 exports.likePostPost = async (req, res) => {
-    // console.log(req.body);
     await prisma.postLike.create({
         data: {
             postId: parseInt(req.body.postId),
@@ -227,6 +250,18 @@ exports.unlikePostPost = async (req, res) => {
     await prisma.postLike.delete({
         where: {
             id: parseInt(req.body.likeId),
+        }
+    })
+    res.redirect(`/profile/${req.body.profileUsername}`)
+}
+
+exports.commentPost = async (req, res) => {
+    console.log(req.body);
+    await prisma.comment.create({
+        data: {
+            postId: parseInt(req.body.postId),
+            userId: parseInt(req.body.userId),
+            text: req.body.text,
         }
     })
     res.redirect(`/profile/${req.body.profileUsername}`)

@@ -56,20 +56,39 @@
         <br>
         
         This post has <%=post.likes.length%> like<% if (post.likes.length !== 1) { %>s<% } %>
-
-        <% const like = post.likes.find(like => like.userId === user.id) %>
-        <% if (like) { %>
-            <form action="/unlikePost" method="post">
-                <input type="text" name="likeId" value="<%=like.id%>" hidden>
-                <input type="text" name="profileUsername" value="<%=profileUser.username%>" hidden>
-                <button>Unlike</button>
-            </form>
-        <% } else { %>
-            <form action="/likePost" method="post">
+        <% if (profileUser.friends.find(friend => friend.id === user.id)
+              || profileUser.id === user.id) { %>
+            <% const like = post.likes.find(like => like.userId === user.id) %>
+            <% if (like) { %>
+                <form action="/unlikePost" method="post">
+                    <input type="text" name="likeId" value="<%=like.id%>" hidden>
+                    <input type="text" name="profileUsername" value="<%=profileUser.username%>" hidden>
+                    <button>Unlike</button>
+                </form>
+            <% } else { %>
+                <form action="/likePost" method="post">
+                    <input type="text" name="postId" value="<%=post.postId%>" hidden>
+                    <input type="text" name="userId" value="<%=user.id%>" hidden>
+                    <input type="text" name="profileUsername" value="<%=profileUser.username%>" hidden>
+                    <button>Like</button>
+                </form>
+            <% } %>
+            <br>
+            <% post.comments.map(comment => { %>
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <%=comment.text %>
+                <br>
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<i>Posted by: <%=comment.username%> on <%=comment.time.toString().slice(4, 21)%></i>
+                <br>
+                <br>
+            <% }) %>
+            <br>
+            <form action="/comment" method="post">
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<textarea name="text" placeholder="Comment on this post"></textarea>
                 <input type="text" name="postId" value="<%=post.postId%>" hidden>
                 <input type="text" name="userId" value="<%=user.id%>" hidden>
                 <input type="text" name="profileUsername" value="<%=profileUser.username%>" hidden>
-                <button>Like</button>
+                <br>
+                &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<button>Submit comment</button>
             </form>
         <% } %>
         
