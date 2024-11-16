@@ -55,13 +55,14 @@
         <i>Posted by: <%=post.username%> on <%=post.time.toString().slice(4, 21)%></i>
         <br>
         
-        This post has <%=post.likes.length%> like<% if (post.likes.length !== 1) { %>s<% } %>
+        This post has <%=post.likedBy.length%> like<% if (post.likedBy.length !== 1) { %>s<% } %>
         <% if (profileUser.friends.find(friend => friend.id === user.id)
               || profileUser.id === user.id) { %>
-            <% const like = post.likes.find(like => like.userId === user.id) %>
+            <% const like = post.likedBy.find(id => id === user.id) %>
             <% if (like) { %>
                 <form action="/unlikePost" method="post">
-                    <input type="text" name="likeId" value="<%=like.id%>" hidden>
+                    <input type="text" name="postId" value="<%=post.postId%>" hidden>
+                    <input type="text" name="userId" value="<%=user.id%>" hidden>
                     <input type="text" name="profileUsername" value="<%=profileUser.username%>" hidden>
                     <button>Unlike</button>
                 </form>

@@ -37,12 +37,14 @@ model user {
   // followers     user[]      @relation("followers")
   // followingMe   user        @relation("followers", fields: [followingMeId], references: [id])
   // followingMeId Int
-  postsMade                 post[]      @relation("author")
-  postsReceived             post[]      @relation("receiver")
+  postsMade                 post[]      @relation("postAuthor")
+  postsReceived             post[]      @relation("postReceiver")
   images                    image[]
   comments                  comment[]
   commentLikes              commentLike[]
   postLikes                 postLike[]
+  // postLikesMade             post[]      @relation("postLikeAuthor")
+  // postLikesReceived         post[]      @relation("postLiker")
 }
 
 model image {
@@ -57,11 +59,14 @@ model image {
 
 model post {
   id          Int         @id @default(autoincrement())
-  author      user        @relation("author", fields: [authorId], references: [id])
+  author      user        @relation("postAuthor", fields: [authorId], references: [id])
   authorId    Int
-  receiver    user        @relation("receiver", fields: [receiverId], references: [id])
+  receiver    user        @relation("postReceiver", fields: [receiverId], references: [id])
   receiverId  Int
   text        String
+  likedBy     Int[]
+  // likedBy     user[]      @relation("postLiker")
+  // likedById   Int
   likes       postLike[]
   createdAt   DateTime    @default(now())
   comment     comment[]
@@ -74,6 +79,7 @@ model comment {
   user        user          @relation(fields: [userId], references: [id])
   userId      Int
   text        String
+  likedBy     Int[]
   likes       commentLike[]
   createdAt   DateTime      @default(now())
 }

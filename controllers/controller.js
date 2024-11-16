@@ -100,11 +100,11 @@ exports.profileGet = async (req, res) => {
         const postId = post.id;
         const userId = post.authorId;
         const likes = post.likes;
+        const likedBy = post.likedBy;
+        
         // const comments = post.comment;
 
         const comments = await Promise.all(post.comment.map(async comment => {
-            // console.log(comment);
-            
             const usernameObject = await prisma.user.findUnique({
                 where: {
                     id: comment.userId,
@@ -113,7 +113,6 @@ exports.profileGet = async (req, res) => {
                     username: true,
                 }
             })
-            console.log(usernameObject);
             
             const username = usernameObject.username;
             const text = comment.text;
@@ -124,13 +123,10 @@ exports.profileGet = async (req, res) => {
             return {username, text, time, likes, id, userId}
         }))
 
-        console.log(comments);
         
-        return {username, text, time, postId, userId, likes, comments}
+        return {username, text, time, postId, userId, likes, likedBy, comments}
     }));
 
-    // console.log(posts[0]);
-    
 
     res.render('profile', {user, profileUser, posts});
 }
@@ -245,26 +241,60 @@ exports.writeOnWallPost = async (req, res, next) => {
 }
 
 exports.likePostPost = async (req, res) => {
-    await prisma.postLike.create({
+
+    await prisma.post.update({
+        where: {
+            id: parseInt(req.body.postId),
+        },
         data: {
-            postId: parseInt(req.body.postId),
-            userId: parseInt(req.body.userId),
+            likedBy: {
+                push: parseInt(req.body.userId)
+            }
         }
     })
+
+    // await prisma.postLike.create({
+    //     data: {
+    //         postId: parseInt(req.body.postId),
+    //         userId: parseInt(req.body.userId),
+    //     }
+    // })
     res.redirect(`/profile/${req.body.profileUsername}`)
 }
 
 exports.unlikePostPost = async (req, res) => {
-    await prisma.postLike.delete({
+    
+    const likedByObject = await prisma.post.findUnique({
         where: {
-            id: parseInt(req.body.likeId),
+            id: parseInt(req.body.postId),
+        },
+        select: {
+            likedBy: true,
         }
     })
+    const likedBy = likedByObject.likedBy;
+    console.log(likedBy);
+    const newLikedBy = likedBy.filter(id => id !== parseInt(req.body.userId));
+    console.log(newLikedBy);
+
+    await prisma.post.update({
+        where: {
+            id: parseInt(req.body.postId),
+        },
+        data: {
+            likedBy: newLikedBy,
+        }
+    })
+    
+    // await prisma.postLike.delete({
+    //     where: {
+    //         id: parseInt(req.body.likeId),
+    //     }
+    // })
     res.redirect(`/profile/${req.body.profileUsername}`)
 }
 
 exports.commentPost = async (req, res) => {
-    console.log(req.body);
     await prisma.comment.create({
         data: {
             postId: parseInt(req.body.postId),
@@ -276,7 +306,6 @@ exports.commentPost = async (req, res) => {
 }
 
 exports.likeCommentPost = async (req, res) => {
-    console.log(req.body);
     
     await prisma.commentLike.create({
         data: {
